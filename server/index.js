@@ -47,7 +47,6 @@ app.post("/employees", async (req, res) => {
 app.get("/employees", async (req, res) => {
     try {
         const allEmployees = await pool.query("SELECT * FROM employees");
-        console.log("allEmployees", allEmployees);
         res.json(allEmployees.rows);
     } catch (err) {
         console.error(err.message);
@@ -80,7 +79,6 @@ app.put("/employees/:id", async (req, res) => {
             values.push(updatedValue[key]);
             count++;
         }
-
         query = query.slice(0, -1) + ` WHERE id = $${count} RETURNING *`;
         values.push(id);
         const updatedEmployee = await pool.query(query, values);
@@ -99,11 +97,10 @@ app.delete("/employees/:id", async (req, res) => {
         const deletedEmployees = await pool.query(query, [id]);
 
         console.log(deletedEmployees);
-        // if (deletedEmployees.rows.length === 0) {
-        //     return res.status(404).json({ error: "Employee not found" });
-        // }
-        // res.json(deletedEmployees.rows[0]);
-        res.json("Employee deleted");
+        if (deletedEmployees.rows.length === 0) {
+            return res.status(404).json({ error: "Employee not found" });
+        }
+        res.json(deletedEmployees.rows[0]);
     }catch(err) {
         console.error(err.message);
         res.status(500).json({ error: "Error deleting employee" });

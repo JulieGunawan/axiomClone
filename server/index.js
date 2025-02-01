@@ -15,14 +15,31 @@ app.use(express.json());
 
 app.post("/employees", async (req, res) => {
     try {
-        const { firstName, lastName, email, password, inPayroll, status, locked } = req.body;
-        const newEmployee = await pool.query(
-            "INSERT INTO employees (firstName, lastName, email, password, inPayroll, status, locked) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *",
-            [firstName, lastName, email, password, inPayroll, status, locked]
-        );
+     
+        const newInfo = req.body;
+
+        if (Object.keys(newInfo).length === 0) {
+            return res.status(400).json({ error: "No information provided" });
+        }
+
+        let values=[];
+        let columns=[];
+        let count =1;
+        let placeholder=[];
+
+        for (const key in newInfo){
+            columns.push(key);
+            placeholder.push(`$${count}`);
+            values.push(newInfo[key]);
+            count++;
+        }
+
+        let query = `INSERT INTO employees (${columns.join(", ")}) VALUES (${placeholder.join(", ")}) RETURNING *`;
+        const newEmployee = await pool.query(query,values);
         res.json(newEmployee.rows[0]);
     } catch (err) {
         console.error(err.message);
+        res.status(500).json({ error: "Error creating an employee" });
     }
 });
 
@@ -30,9 +47,11 @@ app.post("/employees", async (req, res) => {
 app.get("/employees", async (req, res) => {
     try {
         const allEmployees = await pool.query("SELECT * FROM employees");
+        console.log("allEmployees", allEmployees);
         res.json(allEmployees.rows);
     } catch (err) {
         console.error(err.message);
+        res.status(500).json({ error: "Error getting all employees" });
     }
 });
 
@@ -44,6 +63,7 @@ app.get("/employees/:id", async (req, res) => {
         res.json(employee.rows[0]);
     } catch (err) {
         console.error(err.message);
+        res.status(500).json({ error: "Error updating employee" });
     }
 })
 
@@ -51,13 +71,44 @@ app.get("/employees/:id", async (req, res) => {
 app.put("/employees/:id", async (req, res) => {
     try {
         const { id } = req.params;
-        const { firstName, lastName, email, password, inPayroll, status, locked } = req.body;
-        const updatedEmployee = await pool.query
+        const updatedValue = req.body;
+        let values = [];
+        let query = "UPDATE employees SET ";
+        let count =1;
+        for (const key in updatedValue){
+            query += `${key} = $${count},`;
+            values.push(updatedValue[key]);
+            count++;
+        }
 
+        query = query.slice(0, -1) + ` WHERE id = $${count} RETURNING *`;
+        values.push(id);
+        const updatedEmployee = await pool.query(query, values);
+        res.json(updatedEmployee);
     }
-    catch (err) {}
+    catch (err) {
+        console.error(err.message);
+        res.status(500).json({ error: "Error updating employee" });
+    }
 })
 // delete an employee
+app.delete("/employees/:id", async (req, res) => {
+    try {
+        const {id} = req.params;
+        let query = "DELETE FROM employees WHERE id = $1 RETURNING *";
+        const deletedEmployees = await pool.query(query, [id]);
+
+        console.log(deletedEmployees);
+        // if (deletedEmployees.rows.length === 0) {
+        //     return res.status(404).json({ error: "Employee not found" });
+        // }
+        // res.json(deletedEmployees.rows[0]);
+        res.json("Employee deleted");
+    }catch(err) {
+        console.error(err.message);
+        res.status(500).json({ error: "Error deleting employee" });
+    }
+})
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`);

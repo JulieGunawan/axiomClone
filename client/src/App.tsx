@@ -1,11 +1,20 @@
-import './App.css'
+import './App.css';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import ListPage from './pages/ListPage';
+import EditDeletePage from './pages/EditDeletePage';
+import CreatePage from './pages/CreatePage';
 
 function App() {
 
   return (
-    <> 
-    HELLO WORLD
-    </>
+    <BrowserRouter> 
+      <Routes>
+        <Route path="/" element={<ListPage />} />
+        <Route path="/create" element={<CreatePage />} />
+        <Route path="/edit" element={<EditDeletePage />} />
+        <Route path="/delete" element={<EditDeletePage />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 

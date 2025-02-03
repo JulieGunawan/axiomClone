@@ -3,9 +3,9 @@ import CreateForm from "../components/CreateForm";
 
 const CreatePage = () => {
     return(
-        <div className="flex flex-col gap-4">
-            <div className="h-12 mt-5">
-                <h1 className="text-black">Create Page</h1>
+        <div className="w-full flex flex-col items-center min-h-screen">
+            <div className="h-12 mt-5 items-center">
+                <h1 className="text-black text-3xl">Create Page</h1>
             </div>
             <CreateForm />
         </div>

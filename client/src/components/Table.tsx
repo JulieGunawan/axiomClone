@@ -1,10 +1,12 @@
 import React, { useEffect } from 'react';
 import { Employee } from '../utils/type';
 import { useNavigate } from 'react-router-dom';
+import DeleteModal from './DeleteModal';
 
 const Table = () => {
     const navigate= useNavigate();
     const [employees, setEmployees] = React.useState<Employee[]>([]);
+    const [selectedId, setSelectedId] = React.useState(0);
 
     const getEmployees = async () => {
         try{
@@ -47,6 +49,7 @@ const Table = () => {
         "Action"
     ]
 
+    const[isOpen, setIsOpen] = React.useState(false);
     return (
         <div className="overflow-y-auto px-8 py-4">
             <table className='w-full border border-collapse items-center justify-center text-center'>
@@ -67,7 +70,15 @@ const Table = () => {
                                 <td>{employee.locked}</td>
                                 <td className="sticky right-0 px-2 py-2 flex flex-row justify-around ">
                                     <button className="bg-white text-black border-1 border-black py-1 px-2 rounded" onClick={() => {navigate(`/edit/${employee.id}`)}}>Edit</button>
-                                    <button className="bg-red-500 text-white border-1 border-red-500 py-1 px-2 rounded" onClick={() => {deleteEmployees(employee.id)}}>Delete</button>
+                                    <button className="bg-red-500 text-white border-1 border-red-500 py-1 px-2 rounded" 
+                                        onClick={() => {
+                                            setIsOpen(true);
+                                            setSelectedId(employee.id);
+                                            // deleteEmployees(employee.id);
+                                        }}
+                                    >
+                                        Delete
+                                    </button>
                                 </td>
                             </tr>
                         )
@@ -75,6 +86,7 @@ const Table = () => {
                     
                 </tbody>
             </table>
+            {isOpen && <DeleteModal deleteEmployees={deleteEmployees} id={selectedId} setIsOpen={setIsOpen}/>}
         </div>);
 };
 

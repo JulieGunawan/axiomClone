@@ -3,8 +3,8 @@ import debounce from "lodash/debounce";
 import { useNavigate } from "react-router-dom";
 
 type FormData = {
-    firstName: string;
-    lastName: string;
+    firstname: string;
+    lastname: string;
     email: string;
     status: string;
 }
@@ -12,8 +12,8 @@ const CreateForm = () =>{
     const navigate = useNavigate();
     
     const [formData, setFormData] = useState<FormData>({
-        firstName: "",
-        lastName: "",
+        firstname: "",
+        lastname: "",
         email: "",
         status: "active",
     })
@@ -50,8 +50,8 @@ const CreateForm = () =>{
     return(
         <div className="w-full h-screen max-w-xs flex flex-col">
             <form className="bg-white shadow-md rounded px-8 py-6 mb-4 flex flex-col gap-4" onSubmit={handleSubmit}>
-                <input type="text" name="firstName" className="form-control border border-gray-300 p-2 rounded-md focus:outline-none shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" placeholder="First Name" defaultValue={formData.firstName} onChange={handleChange}/> 
-                <input type="text" name="lastName" className="form-control border border-gray-300 p-2 rounded-md focus:outline-none shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" placeholder="Last Name" defaultValue={formData.lastName} onChange={handleChange}/> 
+                <input type="text" name="firstName" className="form-control border border-gray-300 p-2 rounded-md focus:outline-none shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" placeholder="First Name" defaultValue={formData.firstname} onChange={handleChange}/> 
+                <input type="text" name="lastName" className="form-control border border-gray-300 p-2 rounded-md focus:outline-none shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" placeholder="Last Name" defaultValue={formData.lastname} onChange={handleChange}/> 
                 <input type="text" name="email" className="form-control border border-gray-300 p-2 rounded-md focus:outline-none shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" placeholder="Email" defaultValue={formData.email} onChange={handleChange}/> 
                 <div className="relative inline-block text-left">
                     <label htmlFor="status" className="block text-sm font-medium text-gray-700">Status</label>

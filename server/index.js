@@ -17,7 +17,6 @@ app.post("/employees", async (req, res) => {
     try {
      
         const newInfo = req.body;
-
         if (Object.keys(newInfo).length === 0) {
             return res.status(400).json({ error: "No information provided" });
         }

@@ -1,6 +1,6 @@
 import './App.css';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import EditDeletePage from './pages/EditDeletePage';
+import EditPage from './pages/EditPage';
 import CreatePage from './pages/CreatePage';
 import ListPage from './pages/Listpage';
 
@@ -11,8 +11,7 @@ function App() {
       <Routes>
         <Route path="/" element={<ListPage />} />
         <Route path="/create" element={<CreatePage />} />
-        <Route path="/edit" element={<EditDeletePage />} />
-        <Route path="/delete" element={<EditDeletePage />} />
+        <Route path="/edit/:id" element={<EditPage />} />
       </Routes>
     </BrowserRouter>
   )

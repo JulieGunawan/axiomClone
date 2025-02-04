@@ -1,55 +1,52 @@
-import React, { useCallback, useState } from "react";
-import debounce from "lodash/debounce";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Employee } from "../utils/type";
+const EditForm = (id:number) =>{
 
-type FormData = {
-    firstName: string;
-    lastName: string;
-    email: string;
-    status: string;
-}
-const CreateForm = () =>{
-    const navigate = useNavigate();
-    
-    const [formData, setFormData] = useState<FormData>({
-        firstName: "",
-        lastName: "",
+    const handleSubmit = async (id:number): React.FormEvent<HTMLFormElement> => {
+        try{
+            await fetch(`http://localhost:5000/employees/${id}`, {
+                method: "PUT",
+                
+            })
+        }
+        catch(error){
+            console.log("unable to edit ", error);
+        }
+    }
+
+    const [formData, setFormData] = React.useState<Employee>({
+        id: 0,
+        firstname: "",
+        lastname: "",
         email: "",
         status: "active",
-    })
+        password: "",
+        inPayroll: false,
+        locked: false
+    });
 
-    const debounceHandleChange = useCallback(debounce((name: string, value: string)=>{
-        setFormData((prev)=>({
-            ...prev,
-            [name]: name === "status" ? value === "true" : value
-        }))
-    },500),[]);
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const {name, value} = e.target;
-        debounceHandleChange(name, value);
-    }
-
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+    const fetchEmployee = async (id:number) => {
         try{
-            const body = {formData};
-            await fetch("http://localhost:5000/employees", {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify(body.formData)
-            });
-            navigate("/");
-            
-        } catch (error) {
-            console.error("Error submitting form: ", error);
+            const response = await fetch(`http://localhost:5000/employees/${id}`);
+            if (!response.ok){
+                throw new Error("Unable to fetch employee"); 
+            }
+
+            const data = await response.json();
+            setFormData(data);
         }
-        
+        catch(error){
+            console.log(error);
+        }
     }
+
+    useEffect(() => {
+        fetchEmployee(id);
+    }, [id]);
     
-    return(
+    return (
         <div className="w-full h-screen max-w-xs flex flex-col">
-            <form className="bg-white shadow-md rounded px-8 py-6 mb-4 flex flex-col gap-4" onSubmit={handleSubmit}>
+            <form className="bg-white shadow-md rounded px-8 py-6 mb-4 flex flex-col gap-4" onSubmit={handleSubmit(id)}>
                 <input type="text" name="firstName" className="form-control border border-gray-300 p-2 rounded-md focus:outline-none shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" placeholder="First Name" defaultValue={formData.firstName} onChange={handleChange}/> 
                 <input type="text" name="lastName" className="form-control border border-gray-300 p-2 rounded-md focus:outline-none shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" placeholder="Last Name" defaultValue={formData.lastName} onChange={handleChange}/> 
                 <input type="text" name="email" className="form-control border border-gray-300 p-2 rounded-md focus:outline-none shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" placeholder="Email" defaultValue={formData.email} onChange={handleChange}/> 
@@ -63,7 +60,8 @@ const CreateForm = () =>{
                 <button type="submit" className="btn btn-success rounded-md border-1 px-3 py-2 hover:bg-black hover:text-white">Create</button>
             </form>
         </div>
-    )
+     
+    );
 }
 
-export default CreateForm
+export default EditForm;

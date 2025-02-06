@@ -8,9 +8,9 @@ const Table = () => {
     const [employees, setEmployees] = React.useState<Employee[]>([]);
     const [selectedId, setSelectedId] = React.useState(0);
 
-    const getEmployees = async () => {
+    const getEmployees = async (signal: AbortSignal) => {
         try{
-            const response = await fetch("http://localhost:5000/employees");
+            const response = await fetch("http://localhost:5000/employees", {signal});
             if (!response.ok){
                 throw new Error("Unable to fetch employees"); 
             }
@@ -37,7 +37,10 @@ const Table = () => {
     }
 
     useEffect(() => {
-        getEmployees();
+        const controller = new AbortController();   
+        const signal = controller.signal;
+        getEmployees(signal);
+        return () => controller.abort();
     },[]);
 
     const TABLE_COLUMNS = [

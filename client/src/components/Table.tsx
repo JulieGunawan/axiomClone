@@ -14,12 +14,17 @@ const Table = () => {
             if (!response.ok){
                 throw new Error("Unable to fetch employees"); 
             }
-
             const data = await response.json();
             setEmployees(data);
         }
         catch(error){
-            console.log(error);
+            if (error instanceof Error) {
+                if (error.name === "AbortError") {
+                    console.log("Fetch request was aborted");
+                } else {
+                    console.log("unable to delete ", error);
+                }
+            }
         }
     }
 
@@ -57,13 +62,14 @@ const Table = () => {
         <div className="overflow-y-auto px-8 py-4">
             <table className='w-full border border-collapse items-center justify-center text-center'>
                 <thead className="bg-grey-200">
-                    {TABLE_COLUMNS.map((column) => (
-                        <th className={`px-2 py-2 ${column === "Action" ? "sticky right-0 w-[150px]" : ""}`}>{column}</th>
-                    ))}
+                    <tr>
+                        {TABLE_COLUMNS.map((column) => (
+                            <th key={`${column.indexOf(column)}-${column}`} className={`px-2 py-2 ${column === "Action" ? "sticky right-0 w-[150px]" : ""}`}>{column}</th>
+                        ))}
+                    </tr>
                 </thead>
                 <tbody className="bg-grey-200">
                     {employees.map((employee) => {
-                      
                         return (
                             <tr key={employee.id}>
                                 <td>{employee.firstname}</td>
